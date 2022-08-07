@@ -208,5 +208,49 @@ function walkAround() {
             ```
     - Property names limitations:
         + There are no limitations on property names
+        + if property names have other types ( exclude string), which will be automatically converted to strings.
+            * eg:   
+                ```js
+                let obj = {
+                  0: "test" // same as "0": "test"
+                };              
+
+                // both alerts access the same property (the number 0 is                converted to string "0")
+                alert( obj["0"] ); // test
+                alert( obj[0] ); // test (same property)
+                ```
+    - Property existence: 
+        + we have 3 ways to check: 
+            * using undefined
+                ```js
+                let user = {};
+
+                alert( user.noSuchProperty === undefined ); // true means "no such property"
+                ```
+            * using optional chain '?.'
+            * using 'in' operator
+                ```js
+                let user = { age: 30 };
+
+                let key = "age";
+                alert( key in user ); // true, property "age" exists
+                ```
+    - We can use for ... in: 
+        ```js
+        let codes = {
+          "49": "Germany",
+          "41": "Switzerland",
+          "44": "Great Britain",
+          // ..,
+          "1": "USA"
+        };         
+
+        for (let code in codes) {
+          alert(code); // 1, 41, 44, 49 integer properties are sorted
+        }
+        ```
+
+
+
        
     
