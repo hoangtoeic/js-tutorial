@@ -249,8 +249,350 @@ function walkAround() {
           alert(code); // 1, 41, 44, 49 integer properties are sorted
         }
         ```
+2. Object Reference and copying
+    - Primitive values: strings, numbers, booleans, etc – are always copied “as a whole value”
+    - Object values: reference the same address
+        * eg:
+
+            ```js
+             let user = { name: 'John' };
+
+             let admin = user;           
+
+             admin.name = 'Pete'; // changed by the "admin"                reference            
+
+             alert(user.name); // 'Pete', changes are seen from the        "user"         reference
+            ```
 
 
+            ```js
+            let a = {};
+            let b = a; // copy the reference            
 
+            alert( a == b ); // true, both variables reference the same object
+            alert( a === b ); // true
+            ```
+    - Replicate object: 
+        + Using for...in:
+            ```js
+            let user = {
+              name: "John",
+              age: 30
+            };          
+
+            let clone = {}; // the new empty object         
+
+            // let's copy all user properties into it
+            for (let key in user) {
+              clone[key] = user[key];
+            }           
+
+            // now clone is a fully independent object with the same content
+            clone.name = "Pete"; // changed the data in it          
+
+            alert( user.name ); // still John in the original object
+            ```
+        + Using assign:
+            ```js
+            let user = { name: "John" };
+
+            let permissions1 = { canView: true };
+            let permissions2 = { canEdit: true };           
+
+            // copies all properties from permissions1 and permissions2             into user
+            Object.assign(user, permissions1, permissions2);            
+
+            // now user = { name: "John", canView: true, canEdit: true }
+            ```
+        + Const objects can be modified
+            ```js
+            const user = {
+              name: "John"
+            };          
+
+            user.name = "Pete"; // (*)          
+
+            alert(user.name); // Pete
+            ```
+3. Garbage collection:
+- Garbage collection is performed automatically. We cannot force or prevent it.
+- Objects are retained in memory while they are reachable.
+- Being referenced is not the same as being reachable (from a root): a pack of interlinked objects can become unreachable as a whole, as we’ve seen in the example above.
+
+    ```js
+    function marry(man, woman) {
+      woman.husband = man;
+      man.wife = woman;    
+
+      return {
+        father: man,
+        mother: woman
+      }
+    }      
+
+    let family = marry({
+      name: "John"
+    }, {
+      name: "Ann"
+    });
+    ```
        
-    
+    <img src= "image/reachable.png">
+    <img src= "image/reachable2.png">
+
+4. Object methods, "this"
+- “this” is not bound
+In JavaScript, keyword this behaves unlike most other programming languages. It can be used in any function, even if it’s not a method of an object.
+    ```js
+    function sayHi() {
+      alert( this.name );
+    }
+    ```
+- Arrow functions have no “this”. When this is accessed inside an arrow function, it is taken from outside.
+- Remember: 
+    + When a function is declared, it may use this, but that this has no value until the function is called.
+    + A function can be copied between objects.
+    + When a function is called in the “method” syntax: object.method(), the value of this during the call is object.
+- eg:  
+    ```js
+    function makeUser() {
+      return {
+        name: "John",
+        ref: this
+      };
+    }      
+
+    let user = makeUser();     
+
+    alert( user.ref.name ); // Error: Cannot read property     'name' of undefined
+    ```
+- Here the value of this inside makeUser() is undefined, because it is called as a function, not as a method with “dot” syntax.
+    ```js
+    function makeUser() {
+      return {
+        name: "John",
+        ref() {
+          return this;
+        }
+      };
+    }       
+
+    let user = makeUser();      
+
+    alert( user.ref().name ); // John
+    ```
+- Now it works, because user.ref() is a method. And the value of this is set to the object before dot ..
+
+- A JavaScript function is a block of code designed to perform a particular task. The javascript method is an object property that has a function value. A function can pass the data that is operated and may return the data. The method operates the data contained in a Class
+
+5. Constructor Function, operator "new"
+- They are named with capital letter first.
+- They should be executed only with "new" operator.
+- When a function is executed with new, it does the following steps:
+    + A new empty object is created and assigned to this.
+    + The function body executes. Usually it modifies this, adds new properties to it.
+    + The value of this is returned.
+    ```js
+        function User(name) {
+      // this = {};  (implicitly)   
+
+      // add properties to this
+      this.name = name;
+      this.isAdmin = false; 
+
+      // return this;  (implicitly)
+    }
+    ```
+- Let’s note once again – technically, any function (except arrow functions, as they don’t have this) can be used as a constructor
+
+- Constructor mode test: new.target
+    + Inside a function, we can check whether it was called with new or without it, using a special new.target property.
+    ```js
+            function User(name) {
+          if (!new.target) { // if you run me without       new
+            return new User(name); // ...I will add         new for you
+          }     
+
+          this.name = name;
+        }       
+
+        let john = User("John"); // redirects call to       new User
+        alert(john.name); // John
+    ```
+- Return from constructors
+    + Usually, constructors do not have a return statement. Their task is to write all necessary stuff into this, and it automatically becomes the result.
+    + If return is called with an object, then the object is returned instead of this.For instance, here return overrides this by returning an object:
+        ```js
+                function BigUser() {        
+
+          this.name = "John";       
+
+          return { name: "Godzilla" };  // <--      returns this object
+        }       
+
+        alert( new BigUser().name );  // Godzilla,      got that object
+        ```
+    + If return is called with a primitive, it’s ignored.
+        ```js
+                function SmallUser() {      
+
+          this.name = "John";       
+
+          return; // <-- returns this
+        }       
+
+        alert( new SmallUser().name );  // John
+        ```
+- By the way, we can omit parentheses after new, if it has no arguments:
+
+    ```js
+            let user = new User; // <-- no parentheses
+        // same as
+        let user = new User();
+    ```
+6. Optional chaining
+  - The optional chaining ?. syntax has three forms:    
+
+    + obj?.prop – returns obj.prop if obj exists, otherwise undefined.
+    + obj?.[prop] – returns obj[prop] if obj exists, otherwise undefined.
+    + obj.method?.() – calls obj.method() if obj. method exists, otherwise returns undefined.
+  - The optional chaining ?. stops the evaluation if the value before ?. is undefined or null and returns undefined.
+  - other variant: ?.(), ?.[]
+    ```js
+    let userAdmin = {
+      admin() {
+        alert("I am admin");
+      }
+    };    
+
+    let userGuest = {};   
+
+    userAdmin.admin?.(); // I am admin    
+
+    userGuest.admin?.(); // nothing happens (no such    method)
+    ```
+
+    ```js
+    let key = "firstName";     
+
+    let user1 = {
+      firstName: "John"
+    };     
+
+    let user2 = null;    
+
+    alert( user1?.[key] ); // John
+    alert( user2?.[key] ); // undefined
+    ```
+
+
+  7. Symbol 
+  - By specification, only two primitive types may serve as object property keys: string type, or symbol type.
+  - Symbols are guaranteed to be unique. Even if we create many symbols with exactly the same description, they are different values. The description is just a label that doesn’t affect anything.
+    + eg: 
+      ```js
+      let id1 = Symbol("id");
+      let id2 = Symbol("id");     
+
+      alert(id1 == id2); // false
+      ```
+  - What’s the benefit of using Symbol("id") over a string "id"?
+
+    + As user objects belong to another codebase, it’s    unsafe to add fields to them, since we might    affect pre-defined behavior in that other    codebase. However, symbols cannot be accessed    accidentally. The third-party code won’t be    aware of newly defined symbols, so it’s safe to    add symbols to the user objects.
+      * eg: 
+        ```js
+        let user = { // belongs to another code
+          name: "John"
+        };        
+
+        let id = Symbol("id");        
+
+        user[id] = 1;       
+
+        alert( user[id] ); // we can access the data        using the symbol as the key
+        ```
+
+  - Symbols in an object literal:
+    ```js
+      let id = Symbol("id");
+      const x = {
+          name: 'h',
+          [id]: 123
+      }     
+
+      console.log(x)  
+    ```
+
+  - Symbols are ignore by for…in and Object.keys but work in Object.assign
+
+  - In order to read (create if absent) a symbol from the registry, use Symbol.for(key).
+
+    + That call checks the global     registry, and if there’s a symbol     described as key, then returns it,    otherwise creates a new symbol Symbol   (key) and stores it in the registry    by the given key.
+      ```js
+      // read from the global registry
+      let id = Symbol.for("id"); // if the      symbol did not exist, it is created     
+
+      // read it again (maybe from another      part of the code)
+      let idAgain = Symbol.for("id");     
+
+      // the same symbol
+      alert( id === idAgain ); // true
+      ```
+
+  - Symbol.for(key) and Symbol.keyFor(sym)
+  - Symbols have two main use cases:
+
+    + “Hidden” object properties, it won’t be accidentally processed together with other properties. Also it won’t be accessed directly (eg: for...in, object.keys)
+
+    + There are many system symbols used by JavaScript which are accessible as Symbol.*. We can use them to alter some built-in behaviors
+  - Technically, symbols are not 100% hidden. There is a built-in method Object.getOwnPropertySymbols(obj) that allows us to get all symbols. Also there is a method named Reflect.ownKeys(obj) that returns all keys of an object including symbolic ones
+
+  8. object-to-primitive
+  - The object-to-primitive conversion is called automatically by many built-in functions and operators that expect a primitive as a value.
+
+  - There are 3 types (hints) of it:
+
+    + "string" (for alert and other operations that need a string)
+    + "number" (for maths)
+    + "default" (few operators, usually objects implement it the same way as "number")
+    + The specification describes explicitly which operator uses which hint.
+
+ - The conversion algorithm is:
+
+    + Call obj[Symbol.toPrimitive](hint) if the method exists,
+    + Otherwise if hint is "string"
+       try calling obj.toString() or obj.valueOf(), whatever exists.
+    + Otherwise if hint is "number" or "default"
+       try calling obj.valueOf() or obj.toString(), whatever exists.
+    + All these methods must return a primitive to work (if defined).
+
+    # V. Data types
+1. Methods of primitives: 
+    - One of the best things about objects is that we can store a function as one of its properties
+        ```js
+            let john = {
+              name: "John",
+              sayHi: function() {
+                alert("Hi buddy!");
+              }
+            };          
+
+            john.sayHi(); // Hi buddy!
+        ```
+    - A primitive as an object
+       + The “object wrappers” are different for each primitive type and are called: String, Number, Boolean, Symbol and BigInt. Thus, they provide different sets of methods.
+       ```js
+       let str = "Hello";
+
+        alert( str.toUpperCase() ); // HELLO
+       ```
+       + Note: should not use new when instantiate object
+            ```js
+                alert( typeof 0 ); // "number"
+
+                alert( typeof new Number(0) ); // "object"!
+
+                let num = Number("123"); // convert a string to number
+
+            ``` 
+        + null/undefined have no methods
