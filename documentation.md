@@ -596,3 +596,206 @@ In JavaScript, keyword this behaves unlike most other programming languages. It 
 
             ``` 
         + null/undefined have no methods
+2. Numbers
+  - 2 types: 
+    + Number
+    + BigInt
+  ```js
+  let billion = 1_000_000_000 // 1000000000 // 1e9
+  7.3e9 // 7.3 billions 7_300_000_000 
+  ```
+
+-  In other words, e multiplies the number by 1 with the given zeroes count.
+    ```js
+    1e3 === 1 * 1000
+
+    1.23e6 === 1.23 * 1000000
+
+    1e-3 === 1 / 1000; // 0.001
+
+    1.23e-6 === 1.23 / 1000000; // 0.00000123
+
+
+    ```
+
+- Hex, binary and octal numbers
+  ```js
+  alert( 0xff ); // 255
+
+  let a = 0b11111111; // binary form of 255
+
+  let b = 0o377; // octal form of 255
+
+  alert( a == b ); // true, the same  number 255 at both sides
+
+  ```    
+- toString(base)
+```js
+let num = 255;
+
+alert( num.toString(16) );  // ff
+alert( num.toString(2) );   // 11111111
+```
+
+- parseInt(str, base) parses the string str into an integer in numeral system with given base, 2 ≤ base ≤ 36.
+- num.toString(base) converts a number to a string in the numeral system with the given base.
+  + isNaN(value) converts its argument to a number and then tests it for being NaN
+    ```js
+    alert( isNaN(NaN) ); // true
+    alert( isNaN("str") ); // true 
+    alert( NaN === NaN ); // false
+    ```
+  + Number.isNaN(value) checks whether its argument belongs to the number type, and if so, tests it for being NaN
+    ```js
+          alert( Number.isNaN(NaN) ); // true
+      alert( Number.isNaN("str" / 2) ); // true     
+
+      // Note the difference:
+      alert( Number.isNaN("str") ); // false, because "str" belongs to the      string type, not the number type
+      alert( isNaN("str") ); // true, because isNaN converts string "str" into a      number and gets NaN as a result of this conversion
+    ```
+  + isFinite(value) converts its argument to a number and then tests it for not being NaN/Infinity/-Infinity
+    ```js
+        alert( isFinite("15") ); // true
+    alert( isFinite("str") ); // false, because a special value: NaN
+    alert( isFinite(Infinity) ); // false, because a special value: Infinity
+    ```
+  + Number.isFinite(value) checks whether its argument belongs to the number type, and if so, tests it for not being NaN/Infinity/-Infinity
+      ```js
+      alert( Number.isFinite(123) ); // true
+      alert( Number.isFinite(Infinity) ); //false
+      alert( Number.isFinite(2 / 0) ); // false     
+
+      // Note the difference:
+      alert( Number.isFinite("123") ); // false, because "123" belongs to the       string type, not the number type
+      alert( isFinite("123") ); // true, because isFinite converts string "123"       into a number 123
+      ```
+      - Comparison with Object.is
+        + There is a special built-in method Object.is that compares values like      ===, but is more reliable for two edge cases:     
+
+          1. It works with NaN: Object.is(NaN, NaN) === true, that’s a good thing.
+          2. Values 0 and -0 are different: Object.is(0, -0) === false, technically      that’s true, because internally the number has a sign bit that may be     different even if all other bits are zeroes.
+        + In all other cases, Object.is(a, b) is the same as a === b.     
+
+        + We mention Object.is here, because it’s often used in JavaScript    specification. When an internal algorithm needs to compare two values for being exactly the same, it uses Object.is (internally called SameValue).
+
+3. String
+      - Quotes
+        + 
+        ```js
+        let single = 'single-quoted';
+        let double = "double-quoted";       
+
+        let backticks = `backticks`;
+        ```
+
+      - Special characters
+        + <img src="image/String.PNG">
+
+      - String length
+        ```js
+        alert( `My\n`.length ); // 3
+        // Note that \n is a single “special” character, so the length is indeed 3.
+
+
+        ```
+
+      - Accessing characters
+        ```js
+        let str = `Hello`;
+
+        // the first character
+        alert( str[0] ); // H
+        alert( str.charAt(0) ); // H
+
+        for (let char of "Hello") {
+        alert(char); // H,e,l,l,o (char becomes "H", then "e", then "l" etc)
+        }
+        ```
+
+      - Strings are immutable
+         
+          ```js
+          let str = 'Hi';
+
+          str[0] = 'h'; // error
+          alert( str[0] ); // doesn't work
+          ```
+      - Searching for a substring
+        + str.indexOf: It looks for the substr in str, starting from the given position pos, and returns the position where the match was found or -1 if nothing can be found.
+            ```js
+            let str = 'Widget with id';
+
+              alert( str.indexOf              ('Widget') ); // 0, because               'Widget' is found at the              beginning
+              alert( str.indexOf              ('widget') ); // -1, not found,               the search is case-sensitive
+
+            let str = 'Widget with id';
+
+            alert( str.indexOf('id',            2) ) // 12
+            ```
+          + The bitwise NOT trick: ~n equals -(n+1).
+          ```js
+          alert( "Widget".includes("id") ); // true
+          alert( "Widget".includes("id", 3) ); // false, from position 3 there is no          "id"
+
+          alert( "Widget".startsWith("Wid") ); // true, "Widget" starts with "Wid"
+          alert( "Widget".endsWith("get") ); // true, "Widget" ends with "get"
+          ```
+      - Getting a substring
+        + str.slice(start [, end])
+          Returns the part of the string from start to (but not including) end.
+            ```js
+            let str = "stringify";
+            alert( str.slice(0, 5) ); // 'strin', the substring from 0 to 5 (not            including 5)
+            alert( str.slice(0, 1) ); // 's', from 0 to 1, but not including 1, so only             character at 0
+            ```
+
+      - Comparing strings
+        ```js
+        alert( 'a' > 'Z' ); // true
+        ```
+        + str.codePointAt(pos)
+          ```js
+          // different case letters have different codes
+            alert( "z".codePointAt(0) ); // 122
+            alert( "Z".codePointAt(0) ); // 90
+          ```
+        + String.fromCodePoint(code)
+        ```js
+        alert( String.fromCodePoint(90) ); // Z
+        ```
+
+        + Str1.localeCompare(Str2):
+          * Returns a negative number if str is less than str2.
+          * Returns a positive number if str is greater than str2.
+          * Returns 0 if they are equivalent.
+          ```js
+          alert( 'Österreich'.localeCompare('Zealand') ); // -1
+
+          ```
+      - Internals, Unicode
+        + Surrogate pairs: All frequently used characters have 2-byte codes, So rare symbols are encoded with a pair of 2-byte characters called “a surrogate pair”.
+        ```js
+        alert( '𝒳'.length ); // 2, MATHEMATICAL SCRIPT CAPITAL X
+        alert( '😂'.length ); // 2, FACE WITH TEARS OF JOY
+        alert( '𩷶'.length ); // 2, a rare Chinese hieroglyph
+        ```
+        + Diacritical marks and normalization
+          * In many languages, there are symbols that are composed of the base character with a mark above/under it.
+          * For instance, the letter a can be the base character for: àáâäãåā
+          ```js
+          alert( 'S\u0307\u0323' ); // Ṩ
+          let s1 = 'S\u0307\u0323'; // Ṩ, S + dot above + dot below
+          let s2 = 'S\u0323\u0307'; // Ṩ, S + dot below + dot above         
+
+          alert( `s1: ${s1}, s2: ${s2}` );          
+
+          alert( s1 == s2 ); // false though the characters look identical (?!)
+          ```
+          * To solve this, there exists a “Unicode normalization” algorithm that brings each string to the single “normal” form. It is implemented by str.normalize().
+          ```js
+          alert( "S\u0307\u0323".normalize() == "S\u0323\u0307".normalize() ); // true
+          alert( "S\u0307\u0323".normalize().length ); // 1         
+
+          alert( "S\u0307\u0323".normalize() == "\u1e68" ); // true
+          ```
