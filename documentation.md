@@ -799,3 +799,51 @@ alert( num.toString(2) );   // 11111111
 
           alert( "S\u0307\u0323".normalize() == "\u1e68" ); // true
           ```
+4. Arrays: 
+  - Declaration
+    ```js
+      let arr = new Array();
+      let arr = [];
+    ```
+  - Get last elements with “at”
+    ```js
+      let fruits = ["Apple", "Orange", "Plum"];
+
+      // same as fruits[fruits.length-1]
+      alert( fruits.at(-1) ); // Plum
+    ```
+  - Methods pop/push, shift/unshift
+    + <img src = "image/shift&unshift.PNG">
+  - Internals
+    + The ways to misuse an array:
+
+        * Add a non-numeric property like arr.test = 5.
+        * Make holes, like: add arr[0] and then arr[1000] (and nothing between them).
+        * Fill the array in the reverse order, like arr[1000], arr[999] and so on.
+    + Please think of arrays as special structures to work with the ordered data. They provide special methods for that. Arrays are carefully tuned inside JavaScript engines to work with contiguous ordered data, please use them this way. And if you need arbitrary keys, chances are high that you actually require a regular object {}.
+  - Performance
+    + Methods push/pop run fast, while shift/unshift are slow.
+    + The shift operation must do 3 things:
+
+      * Remove the element with the index 0.
+      * Move all elements to the left, renumber them from the index 1 to 0, from 2 to 1 and so on.
+      * Update the length property.
+  - Loops
+    * should use for .. of
+  - A word about “length”
+  - toString
+    ```js
+      alert( [1,2] + 1 ); // "1,21"
+
+    ```
+  - Don’t compare arrays with ==
+    ```js
+    alert( [] == [] ); // false
+    alert( [0] == [0] ); // false
+
+    alert( 0 == [] ); // true
+      // object to primitive [] -> ''
+      // type conversion: '' -> 0
+      
+    alert('0' == [] ); // false
+    ```
