@@ -847,3 +847,194 @@ alert( num.toString(2) );   // 11111111
       
     alert('0' == [] ); // false
     ```
+
+  5. Array methods: 
+    - add/Remove items:
+      + Splice: arr.splice(start, deletedNum,[ele1, ele2,..eleN]): from index start, delete deleteNum elements and then inserts ele1, ele2,..eleN at their place
+
+          ```js
+          let arr = ['hi', 'ha', 'ok', 'let'];    
+
+          let result = arr.splice(0,3, 'online');   
+
+          console.log('arr', arr) //arr [ 'online','let' ]   
+
+          console.log('result', result) //result [    'hi', 'ha', 'ok' ]
+          ```
+      + Slice: arr.slice([start], [end]): create new array from start Index to end Index (not include end Index)
+          ```js
+          let arr = ['hi', 'ha', 'ok', 'let', ' see '];
+
+          const result = arr.slice(0,2)
+          console.log('result', result);  //result [ 'hi', 'ha' ]
+          ```
+      + Concat: arr.concat(arg1, arg2...): arg: values or arrays
+    - iterate: forEach
+    - Searching in array:
+      + arr.indexOf(item, from): looks for item starting from index from, and returns the index where it was found, otherwise -1.
+        ```js
+        let arr = ['Apple', 'Orange', 'Apple', 'Orange', 'Apple']
+        const result = arr.indexOf('Orange', 2,)
+        console.log('result', result); // 3  
+        ```
+      + arr.includes(item, from): looks for item starting from index from, returns true if found.
+        ```js
+
+        let arr = ['Apple', 'Orange', 'Apple', 'Orange', 'Apple']
+
+        const result = arr.includes('Orange', 2,)
+        console.log('result', result);  
+        ```
+      + arr.find(): If the item is found, it will be returned. If nothing found, undefined is returned.
+        ```js
+        let users = [
+          {id: 1, name: "John"},
+          {id: 2, name: "Pete"},
+          {id: 3, name: "Mary"}
+        ];        
+
+        let user = users.find(item => item.id == 1);        
+
+        alert(user.name); // John
+        ```
+      + arr.findIndex(): returns the index where the element was found instead of the element itself. The value of -1 is returned if nothing is found.
+        ```js
+
+        let users = [
+          {id: 1, name: "John"},
+          {id: 2, name: "Pete"},
+          {id: 3, name: "Mary"},
+          {id: 4, name: "John"}
+        ];        
+
+        // Find the index of the first John
+        alert(users.findIndex(user => user.name == 'John')); // 0       
+
+        // Find the index of the last John
+        alert(users.findLastIndex(user => user.name == 'John')); // 3
+        ```
+        + arr.filter: return new array of elements which match conditions
+        ```js
+        let users = [
+          {id: 1, name: "John"},
+          {id: 2, name: "Pete"},
+          {id: 3, name: "Mary"}
+        ];         
+
+        // returns array of the first two users
+        let someUsers = users.filter(item => item.id < 3);         
+
+        alert(someUsers.length); // 2
+        ```
+    - Transform array:
+        + arr.map: return new array of elements which is converted to new array
+
+          ```js
+          let lengths = ["Bilbo", "Gandalf", "Nazgul"].map(item => item.length);
+          alert(lengths); // 5,7,6
+          ```
+        + sort: 
+          ```js
+          let arr = [ 1, 2, 15 ];         
+
+          // the method reorders the content of arr
+          arr.sort();         
+
+          alert( arr );  // 1, 15, 2  // Literally, all elements are converted to strings for comparisons. For strings, lexicographic ordering is applied and indeed "2" > "15".
+          ```
+        + reverse: The method arr.reverse reverses the order of elements in arr.
+          ```js
+          let arr = [1, 2, 3, 4, 5];
+          arr.reverse();  
+          ```
+
+        + split: str.split('delimiter', num) : convert string to new array with delimiter and array-length = num 
+        ```js 
+        let names = 'Bilbo, Gandalf, Nazgul';
+
+        let arr = names.split(', ');
+        console.log('arr', arr) // arr [ 'Bilbo', 'Gandalf', 'Nazgul' ]
+        ```
+
+        + join: str.join('delimiter', num) : convert array to new string with delimiter and str-length = num 
+          ```js
+          let arr = ['Bilbo', 'Gandalf', 'Nazgul'];
+
+          let str = arr.join(';'); // glue the array into a string using ;           
+
+          alert( str ); // Bilbo;Gandalf;Nazgul
+          ```
+        + Reduce: 
+  6. Iterable: Objects that can be used in for..of are called iterable.
+    - include: string & array
+  7. Map & Set
+    - Map is a collection of keyed data items, just like an Object. But the main difference is that Map allows keys of any type.      
+
+    - Methods and properties are:     
+
+       + new Map() – creates the map.
+       + map.set(key, value) – stores the value by the key.
+       + map.get(key) – returns the value by the key, undefined if key doesn’t exist in map.
+       + map.has(key) – returns true if the key exists, false otherwise.
+       + map.delete(key) – removes the value by the key.
+       + map.clear() – removes everything from the map.
+       + map.size – returns the current element count.
+    - Iteration over Map:
+      + map.keys() – returns an iterable for keys,
+      + map.values() – returns an iterable for values,
+      + map.entries() – returns an iterable for entries [key, value], it’s used by default in for..of.
+        ```js
+        let obj = {
+            name: 'x',
+            age: 12
+        }
+        let map2 = new Map([
+            [ '1', 'kk' ],
+            [ '2', 20 ]
+        ])
+        console.log('map2', map2.get('1'))
+        let map3 = map2.entries()        
+
+        console.log('map2.1', map3)        
+
+        for (let x of map3) {
+            console.log('x', x)
+        }
+
+        ```
+
+        - Object.entries: Map from Object
+          ```js
+          let obj = {
+            name: "John",
+            age: 30
+          };          
+
+          let map = new Map(Object.entries(obj));         
+
+          alert( map.get('name') ); // John
+          ```
+        - Object.fromEntries: Object from Map
+        ```js
+        let prices = Object.fromEntries([
+          ['banana', 1],
+          ['orange', 2],
+          ['meat', 4]
+        ]);       
+
+        // now prices = { banana: 1, orange: 2, meat: 4 }       
+
+        alert(prices.orange); // 2
+        ```
+
+    - Set: 
+      + A Set is a special type collection – “set of values” (without keys), where each value may occur only once.
+
+      + Its main methods are:   
+
+        * new Set(iterable) – creates the set, and if an iterable object is provided (usually an array), copies values from it into the set.
+        * set.add(value) – adds a value, returns the set itself.
+        * set.delete(value) – removes the value, returns true if value existed at the moment of the call, otherwise false.
+        * set.has(value) – returns true if the value exists in the set, otherwise false.
+        * set.clear() – removes everything from the set.
+        * set.size – is the elements count.
