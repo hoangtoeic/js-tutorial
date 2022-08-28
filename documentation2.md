@@ -291,3 +291,155 @@
 
       alert(ms); // 1327611110417  (timestamp)
       ```
+
+6.2 Rest parameters and spread syntax 
+
+- Math.max(arg1, arg2, ..., argN) – returns the greatest of the arguments.
+- Object.assign(dest, src1, ..., srcN) – copies properties from src1..N into dest.
+
+- The “arguments” variable:
+  + There is also a special array-like object named arguments that contains all arguments by their index.
+
+  ```js
+      function showName() {
+      alert( arguments.length );
+      alert( arguments[0] );
+      alert( arguments[1] );    
+
+      // it's iterable
+      // for(let arg of arguments) alert(arg);
+    }   
+
+    // shows: 2, Julius, Caesar
+    showName("Julius", "Caesar");   
+
+    // shows: 1, Ilya, undefined (no second     argument)
+    showName("Ilya");
+  ```
+- Rest parameters ...
+  + When ... is at the end of function parameters, it’s “rest parameters” and gathers the rest of the list of arguments into an array.
+
+  + Rest parameters are used to create functions that accept any number of arguments.
+    ```js
+    function showName(firstName, lastName, ...titles) {
+      alert( firstName + ' ' + lastName ); //     Julius Caesar   
+
+      // the rest go into titles array
+      // i.e. titles = ["Consul", "Imperator"]
+      alert( titles[0] ); // Consul
+      alert( titles[1] ); // Imperator
+      alert( titles.length ); // 2
+    }   
+
+    showName("Julius", "Caesar", "Consul",    "Imperator");
+    ```
+- Spread syntax
+    + When ... occurs in a function call or alike, it’s called a “spread syntax” and expands an array, object into a list.
+
+    ```js
+    let obj = { a: 1, b: 2, c: 3 };
+
+    let objCopy = { ...obj }; // spread the      object into a list of parameters
+                              // then return the result in a new object    
+
+    // do the objects have the same contents?
+    alert(JSON.stringify(obj) === JSON.stringify     (objCopy)); // true    
+
+    // are the objects equal?
+    alert(obj === objCopy); // false (not same     reference)   
+
+    // modifying our initial object does not     modify the copy:
+    obj.d = 4;
+    alert(JSON.stringify(obj)); // {"a":1,"b":2,     "c":3,"d":4}
+    alert(JSON.stringify(objCopy)); // {"a":1,     "b":2,"c":3}
+    ```
+
+5. Global Object:
+  - We should store values in the global object only if they’re truly global for our project. And keep their number at minimum.
+  - In-browser, unless we’re using modules, global functions and variables declared with var become a property of the global object.
+
+  6. Function object: 
+
+      - The “name” property
+
+       ```js
+            function sayHi() {
+              alert("Hi");
+            }     
+
+            alert(sayHi.name); // sayHi
+       ```
+     
+      - The “length” property: 
+        + There is another built-in property “length” that returns the number of function parameters
+        + Here we can see that rest parameters are not counted.
+        ```js
+        function f1(a) {}
+        function f2(a, b) {}
+        function many(a, b, ...more) {}       
+
+        alert(f1.length); // 1
+        alert(f2.length); // 2
+        alert(many.length); // 2
+        ```
+      - Custom properties:
+        ```js
+        function makeCounter() {
+
+          function counter() {
+            return counter.count++;
+          };        
+
+          counter.count = 0;        
+
+          return counter;
+        }       
+
+        let counter = makeCounter();        
+
+        counter.count = 10;
+        alert( counter() ); // 10
+        ```
+      - NFE: Named Function Expression, or NFE, is a term for Function Expressions that have a name.
+
+        ```js
+          let sayHi = function func(who) {
+            alert(`Hello, ${who}`);
+          };
+        ```
+        + There are two special things about the name func, that are the reasons for it:
+          * It allows the function to reference itself internally.
+          * It is not visible outside of the function.
+        ```js
+        let sayHi = function func(who) {
+          if (who) {
+            alert(`Hello, ${who}`);
+          } else {
+            func("Guest"); // use func to re-call         itself
+          }
+        };        
+
+        sayHi(); // Hello, Guest        
+
+        // But this won't work:
+        func(); // Error, func is not defined (not        visible outside of the function)
+        ```
+        + func is different with sayHi because func is not access from outer code but sayHi can do this.
+        ```js
+        let sayHi = function func(who) {
+          if (who) {
+            alert(`Hello, ${who}`);
+          } else {
+            func("Guest"); // Now all fine
+          }
+        };        
+
+        let welcome = sayHi;
+        sayHi = null;       
+
+        welcome(); // Hello, Guest (nested call         works)
+        ```
+
+
+
+
